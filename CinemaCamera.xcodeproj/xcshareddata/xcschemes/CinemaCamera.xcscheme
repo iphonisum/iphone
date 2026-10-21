@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "1A0000012B00000100000001"
+               BlueprintIdentifier = "1A0000002B00000100000001"
                BuildableName = "CinemaCamera.app"
                BlueprintName = "CinemaCamera"
                ReferencedContainer = "container:CinemaCamera.xcodeproj">
@@ -44,7 +44,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "1A0000012B00000100000001"
+            BlueprintIdentifier = "1A0000002B00000100000001"
             BuildableName = "CinemaCamera.app"
             BlueprintName = "CinemaCamera"
             ReferencedContainer = "container:CinemaCamera.xcodeproj">

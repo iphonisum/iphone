@@ -65,7 +65,7 @@
 			isa = PBXGroup;
 			children = (
 				1A4000022B00000100000001 /* Sources */,
-				1A0000012B00000100000001 /* CinemaCamera.app */,
+				1A4000082B00000100000001 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
@@ -135,10 +135,18 @@
 			path = CinemaHUDView;
 			sourceTree = "<group>";
 		};
+		1A4000082B00000100000001 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				1A0000012B00000100000001 /* CinemaCamera.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		1A0000012B00000100000001 /* CinemaCamera */ = {
+		1A0000002B00000100000001 /* CinemaCamera */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1A5000012B00000100000001 /* Build configuration list for PBXNativeTarget "CinemaCamera" */;
 			buildPhases = (
@@ -163,7 +171,7 @@
 				LastSwiftUpdateCheck = 1500;
 				LastUpgradeCheck = 1500;
 				TargetAttributes = {
-					1A0000012B00000100000001 = {
+					1A0000002B00000100000001 = {
 						CreatedOnToolsVersion = 15.0;
 						DevelopmentTeam = "";
 						ProvisioningStyle = Manual;
@@ -179,11 +187,11 @@
 				Base,
 			);
 			mainGroup = 1A4000012B00000100000001;
-			productRefGroup = 1A4000012B00000100000001;
+			productRefGroup = 1A4000082B00000100000001 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				1A0000012B00000100000001 /* CinemaCamera */,
+				1A0000002B00000100000001 /* CinemaCamera */,
 			);
 		};
 /* End PBXProject section */
