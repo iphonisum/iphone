@@ -10,6 +10,7 @@
 import Foundation
 import AVFoundation
 import CoreVideo
+import VideoToolbox
 import os.log
 
 public enum CinemaCodec: String, CaseIterable, Identifiable {
@@ -104,7 +105,7 @@ public final class ZeroCopyRecorder {
         
         if codec == .hevc10Bit {
             videoSettings[AVVideoCompressionPropertiesKey] = [
-                AVVideoProfileLevelKey: kVTProfileLevel_HEVC_Main10_AutoLevel,
+                AVVideoProfileLevelKey: kVTProfileLevel_HEVC_Main10_AutoLevel as String,
                 AVVideoExpectedSourceFrameRateKey: fps,
                 AVVideoAverageBitRateKey: 150_000_000 // 150 Mbps for 10-bit HEVC 4K120
             ]

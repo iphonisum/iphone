@@ -39,17 +39,18 @@ public final class SpatialOpticsPipeline {
     }
     
     private func setupPipelines() {
-        guard let library = try? context.device.makeDefaultLibrary() else {
-            // Load embedded shader source if bundle library is unavailable
-            loadFromInlineMetalSource()
+        if let library = context.device.makeDefaultLibrary() {
+            buildPipelines(from: library)
             return
         }
-        buildPipelines(from: library)
+        // Load embedded shader source if bundle library is unavailable
+        loadFromInlineMetalSource()
     }
     
     private func loadFromInlineMetalSource() {
-        guard let url = Bundle.module.url(forResource: "CinemaSpatialOptics", withExtension: "metal"),
-              let source = try? String(contentsOf: url) else {
+        let url = Bundle.main.url(forResource: "CinemaSpatialOptics", withExtension: "metal") ??
+                  Bundle.main.url(forResource: "CinemaSpatialOptics", withExtension: "metal", subdirectory: "Shaders")
+        guard let validURL = url, let source = try? String(contentsOf: validURL) else {
             logger.error("Could not locate CinemaSpatialOptics.metal")
             return
         }
