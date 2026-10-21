@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iPhone 15 Pro Max Cinema Camera & Spatial LUT Engine</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        body {
+            background-color: #08080a;
+            color: #ececec;
+            font-family: 'Inter', -apple-system, sans-serif;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Cinema Viewfinder Container */
+        #cinema-viewport {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            background: #000;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #viewfinder-canvas {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        /* Letterbox Matte Overlays */
+        .matte-bar {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            background: #000;
+            z-index: 5;
+            transition: height 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: none;
+        }
+        #matte-top { top: 0; height: 12.82%; }
+        #matte-bottom { bottom: 0; height: 12.82%; }
+
+        /* HUD Overlay Layer */
+        #hud-layer {
+            position: absolute;
+            inset: 0;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 16px 24px;
+            pointer-events: none;
+        }
+        .interactive {
+            pointer-events: auto;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .hud-badge {
+            background: rgba(18, 18, 22, 0.78);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            padding: 6px 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            color: #f0f0f0;
+        }
+
+        .record-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #444;
+            transition: all 0.2s ease;
+        }
+        .recording .record-indicator {
+            background: #ff3b30;
+            box-shadow: 0 0 12px #ff3b30;
+            animation: pulse-rec 1s infinite alternate;
+        }
+        @keyframes pulse-rec {
+            from { opacity: 1; transform: scale(1); }
+            to { opacity: 0.4; transform: scale(0.85); }
+        }
+
+        .badge-tag {
+            background: #ffcc00;
+            color: #000;
+            font-weight: 800;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 9px;
+        }
+
+        .latency-badge {
+            color: #30d158;
+            border-color: rgba(48, 209, 88, 0.3);
+        }
+
+        /* Middle Section: Scopes & Exposure Dials */
+        .middle-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            flex: 1;
+            margin: 12px 0;
+        }
+
+        /* Left Scopes Panel */
+        .left-scopes {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .tool-btn {
+            background: rgba(18, 18, 22, 0.85);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #bbb;
+            border-radius: 8px;
+            padding: 8px 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            width: 58px;
+        }
+        .tool-btn:hover {
+            border-color: rgba(255, 204, 0, 0.5);
+            color: #fff;
+        }
+        .tool-btn.active {
+            background: #ffcc00;
+            color: #000;
+            border-color: #ffcc00;
+            font-weight: 800;
+        }
+        .tool-btn.active.peaking {
+            background: #30d158;
+            border-color: #30d158;
+            color: #000;
+        }
+
+        /* Histogram Widget */
+        .histogram-container {
+            width: 130px;
+            height: 52px;
+            background: rgba(12, 12, 16, 0.85);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 8px;
+            padding: 6px;
+            position: relative;
+        }
+        .hist-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 8px;
+            color: #888;
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2px;
+        }
+        #hist-canvas {
+            width: 100%;
+            height: 32px;
+            display: block;
+        }
+
+        /* Right Manual Controls Panel */
+        .right-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            align-items: flex-end;
+        }
+
+        .dial-card {
+            background: rgba(18, 18, 22, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 10px;
+            padding: 8px 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 4px;
+            min-width: 160px;
+        }
+
+        .dial-label-row {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            align-items: center;
+        }
+        .dial-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            color: #ffcc00;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        .dial-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .sweet-spot-badge {
+            background: #ffcc00;
+            color: #000;
+            font-size: 7px;
+            font-weight: 800;
+            padding: 1px 4px;
+            border-radius: 3px;
+            margin-left: 6px;
+        }
+
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 2px;
+            outline: none;
+            margin-top: 4px;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #ffcc00;
+            cursor: pointer;
+            box-shadow: 0 0 8px rgba(255, 204, 0, 0.6);
+        }
+
+        /* Bottom Controls Bar */
+        .bottom-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        /* Lens Switcher Pills */
+        .lens-group {
+            display: flex;
+            gap: 4px;
+            background: rgba(18, 18, 22, 0.75);
+            backdrop-filter: blur(10px);
+            padding: 4px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .lens-btn {
+            background: transparent;
+            border: none;
+            color: #bbb;
+            padding: 6px 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            font-weight: 700;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .lens-btn:hover { color: #fff; }
+        .lens-btn.active {
+            background: #ffcc00;
+            color: #000;
+            font-weight: 800;
+        }
+
+        /* Aspect Ratio & Bundle Selectors */
+        .selector-btn {
+            background: rgba(18, 18, 22, 0.78);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #fff;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .selector-btn:hover {
+            border-color: #ffcc00;
+        }
+
+        /* Large Cinema Record Button */
+        .rec-btn {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            border: 3.5px solid #fff;
+            background: transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.15s ease;
+        }
+        .rec-btn:hover { transform: scale(1.04); }
+        .rec-btn:active { transform: scale(0.96); }
+        .rec-core {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #ff3b30;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .recording .rec-core {
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+        }
+
+        /* Spatial Optics Drawer Modal */
+        #optics-drawer {
+            position: absolute;
+            bottom: 90px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(16, 16, 20, 0.94);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 204, 0, 0.35);
+            border-radius: 12px;
+            padding: 16px 20px;
+            display: none;
+            flex-direction: column;
+            gap: 14px;
+            width: 480px;
+            z-index: 20;
+            box-shadow: 0 16px 40px rgba(0,0,0,0.8);
+        }
+        #optics-drawer.open {
+            display: flex;
+        }
+        .drawer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            font-weight: 800;
+            color: #ffcc00;
+        }
+        .drawer-close {
+            background: none;
+            border: none;
+            color: #888;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .drawer-close:hover { color: #fff; }
+        .slider-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+        }
+        .slider-label {
+            width: 140px;
+            color: #ccc;
+        }
+    </style>
+</head>
+<body>
+
+<div id="cinema-viewport">
+    <canvas id="viewfinder-canvas"></canvas>
+
+    <!-- Letterbox Mattes -->
+    <div id="matte-top" class="matte-bar"></div>
+    <div id="matte-bottom" class="matte-bar"></div>
+
+    <!-- HUD Overlay -->
+    <div id="hud-layer">
+        <!-- Top Telemetry Bar -->
+        <div class="top-bar">
+            <div class="hud-badge interactive" id="timecode-badge">
+                <div class="record-indicator"></div>
+                <span id="timecode-text">00:00:00:00</span>
+            </div>
+
+            <div class="hud-badge interactive">
+                <select id="fps-select" style="background:transparent; border:none; color:#ffcc00; font-family:inherit; font-size:inherit; font-weight:bold; outline:none; cursor:pointer;">
+                    <option value="23.976">23.98 FPS</option>
+                    <option value="24" selected>24.00 FPS</option>
+                    <option value="25">25.00 FPS</option>
+                    <option value="29.97">29.97 FPS</option>
+                    <option value="30">30.00 FPS</option>
+                    <option value="50">50.00 FPS</option>
+                    <option value="60">60.00 FPS</option>
+                    <option value="120">120.00 FPS</option>
+                </select>
+            </div>
+
+            <div class="hud-badge interactive">
+                <span>4K • </span>
+                <span id="codec-label" style="color:#ffcc00;">ProRes 422 HQ</span>
+            </div>
+
+            <div class="hud-badge">
+                <span class="badge-tag">APPLE LOG</span>
+            </div>
+
+            <div style="flex:1;"></div>
+
+            <div class="hud-badge interactive">
+                <span style="color:#ffcc00;">⚡ USB-C NVMe</span>
+                <span id="storage-text">1.8 TB (136m)</span>
+            </div>
+
+            <div class="hud-badge latency-badge">
+                <span>⚡ 1.2 ms</span>
+                <span style="font-size:9px; color:#aaa;">(A17 Pro)</span>
+            </div>
+        </div>
+
+        <!-- Middle Scopes & Dials -->
+        <div class="middle-section">
+            <!-- Left Scopes -->
+            <div class="left-scopes interactive">
+                <div class="histogram-container">
+                    <div class="hist-title">
+                        <span>HISTOGRAM</span>
+                        <span style="color:#ffcc00;">IRE 0-100</span>
+                    </div>
+                    <canvas id="hist-canvas"></canvas>
+                </div>
+
+                <button class="tool-btn peaking" id="btn-peaking" onclick="togglePeaking()">
+                    <span>🎯</span>
+                    <span>PEAK</span>
+                </button>
+
+                <button class="tool-btn" id="btn-falsecolor" onclick="toggleFalseColor()">
+                    <span>🎨</span>
+                    <span>FALSE</span>
+                </button>
+
+                <button class="tool-btn" id="btn-zebra" onclick="toggleZebra()">
+                    <span>🦓</span>
+                    <span>ZEBRA</span>
+                </button>
+
+                <button class="tool-btn" id="btn-desqueeze" onclick="cycleDesqueeze()">
+                    <span id="desq-val">1.0x</span>
+                    <span>DESQ</span>
+                </button>
+            </div>
+
+            <!-- Right Sensor Dials -->
+            <div class="right-controls interactive">
+                <!-- Shutter Angle -->
+                <div class="dial-card">
+                    <div class="dial-label-row">
+                        <span class="dial-title">SHUTTER ANGLE</span>
+                        <span class="dial-value" id="shutter-val">180° (1/48s)</span>
+                    </div>
+                    <input type="range" id="shutter-slider" min="45" max="360" step="1" value="180" oninput="updateShutter(this.value)">
+                </div>
+
+                <!-- ISO -->
+                <div class="dial-card">
+                    <div class="dial-label-row">
+                        <span class="dial-title">ISO SENSOR GAIN <span class="sweet-spot-badge">SWEET SPOT</span></span>
+                        <span class="dial-value" id="iso-val">ISO 800</span>
+                    </div>
+                    <input type="range" id="iso-slider" min="34" max="3200" step="25" value="800" oninput="updateISO(this.value)">
+                </div>
+
+                <!-- White Balance Kelvin -->
+                <div class="dial-card">
+                    <div class="dial-label-row">
+                        <span class="dial-title">WHITE BALANCE</span>
+                        <span class="dial-value" id="kelvin-val">5600 K</span>
+                    </div>
+                    <input type="range" id="kelvin-slider" min="2000" max="10000" step="100" value="5600" oninput="updateKelvin(this.value)">
+                </div>
+
+                <!-- Manual Focus -->
+                <div class="dial-card">
+                    <div class="dial-label-row">
+                        <span class="dial-title">MANUAL RACK FOCUS</span>
+                        <span class="dial-value" id="focus-val">0.50</span>
+                    </div>
+                    <input type="range" id="focus-slider" min="0" max="1" step="0.01" value="0.50" oninput="updateFocus(this.value)">
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Controls Bar -->
+        <div class="bottom-bar interactive">
+            <!-- Multi-Lens Switching -->
+            <div class="lens-group">
+                <button class="lens-btn" onclick="switchLens('13mm', 0.5, this)">0.5x 13mm</button>
+                <button class="lens-btn active" onclick="switchLens('24mm', 1.0, this)">1.0x 24mm</button>
+                <button class="lens-btn" onclick="switchLens('28mm', 1.2, this)">1.2x 28mm</button>
+                <button class="lens-btn" onclick="switchLens('35mm', 1.5, this)">1.5x 35mm</button>
+                <button class="lens-btn" onclick="switchLens('120mm', 5.0, this)">5.0x 120mm</button>
+            </div>
+
+            <!-- Spatial LUT & Optics Drawer Button -->
+            <button class="selector-btn" onclick="toggleOpticsDrawer()">
+                <span>✨ SPATIAL OPTICS:</span>
+                <span id="bundle-label" style="color:#ffcc00;">GoldAnamorphic35</span>
+            </button>
+
+            <!-- Aspect Ratio Selector -->
+            <button class="selector-btn" onclick="cycleAspectRatio()">
+                <span>FRAMING:</span>
+                <span id="aspect-label" style="color:#ffcc00;">2.39:1 Scope</span>
+            </button>
+
+            <!-- Cinema Record Button -->
+            <div class="rec-btn" onclick="toggleRecording()">
+                <div class="rec-core"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Spatial Optics Parameter Drawer -->
+    <div id="optics-drawer" class="interactive">
+        <div class="drawer-header">
+            <span>A17 PRO SPATIAL OPTICS MANIFEST</span>
+            <button class="drawer-close" onclick="toggleOpticsDrawer()">✕</button>
+        </div>
+
+        <div class="slider-row">
+            <span class="slider-label">ACTIVE BUNDLE</span>
+            <select id="bundle-select" onchange="changeBundle(this.value)" style="background:#222; border:1px solid #444; color:#fff; padding:4px 8px; border-radius:4px; font-family:inherit;">
+                <option value="gold" selected>GoldAnamorphic35.cinemalut</option>
+                <option value="kodak">KodakVision3_250D.cinemalut</option>
+                <option value="bleach">BleachBypass50.cinemalut</option>
+                <option value="clean">Clean Apple Log (Identity)</option>
+            </select>
+        </div>
+
+        <div class="slider-row">
+            <span class="slider-label">PRO-MIST GLOW</span>
+            <input type="range" id="glow-slider" min="0" max="1.5" step="0.05" value="0.48" oninput="optics.glow = parseFloat(this.value); document.getElementById('glow-val').innerText = Math.round(this.value*100)+'%'">
+            <span id="glow-val" style="width:40px; text-align:right;">48%</span>
+        </div>
+
+        <div class="slider-row">
+            <span class="slider-label">ANAMORPHIC STREAK</span>
+            <input type="range" id="streak-slider" min="1.0" max="8.0" step="0.2" value="4.2" oninput="optics.streak = parseFloat(this.value); document.getElementById('streak-val').innerText = parseFloat(this.value).toFixed(1)+'x'">
+            <span id="streak-val" style="width:40px; text-align:right;">4.2x</span>
+        </div>
+
+        <div class="slider-row">
+            <span class="slider-label">RED FILM HALATION</span>
+            <input type="range" id="halation-slider" min="0" max="1.0" step="0.05" value="0.35" oninput="optics.halation = parseFloat(this.value); document.getElementById('halation-val').innerText = Math.round(this.value*100)+'%'">
+            <span id="halation-val" style="width:40px; text-align:right;">35%</span>
+        </div>
+    </div>
+</div>
+
+<script>
+// --- State & Uniforms ---
+const state = {
+    fps: 24,
+    shutterAngle: 180,
+    iso: 800,
+    kelvin: 5600,
+    focus: 0.5,
+    lens: '24mm',
+    lensZoom: 1.0,
+    aspect: '2.39:1',
+    desqueeze: 1.0,
+    peaking: false,
+    falseColor: false,
+    zebra: false,
+    recording: false,
+    recSeconds: 0,
+    recFrames: 0
+};
+
+const optics = {
+    bundle: 'gold',
+    glow: 0.48,
+    streak: 4.2,
+    streakTint: [0.18, 0.58, 1.0],
+    halation: 0.35
+};
+
+const aspectRatios = [
+    { id: '2.39:1', name: '2.39:1 Scope', topBottomPercent: 12.82 },
+    { id: '2.00:1', name: '2.00:1 Univisium', topBottomPercent: 5.56 },
+    { id: '1.85:1', name: '1.85:1 Flat', topBottomPercent: 1.94 },
+    { id: '16:9', name: '16:9 Native UHD', topBottomPercent: 0 },
+    { id: '4:3', name: '4:3 Academy/IMAX', topBottomPercent: 0 }
+];
+let currentAspectIndex = 0;
+
+// --- WebGL Viewfinder Pipeline ---
+const canvas = document.getElementById('viewfinder-canvas');
+const gl = canvas.getContext('webgl2', { antialias: false, alpha: false }) || canvas.getContext('webgl');
+
+function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    if (gl) gl.viewport(0, 0, canvas.width, canvas.height);
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+// Quad Geometry
+const quadBuffer = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, quadBuffer);
+gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+    -1, -1,  1, -1, -1,  1,
+    -1,  1,  1, -1,  1,  1
+]), gl.STATIC_DRAW);
+
+// Cinema Shader Program
+const vsSource = `
+attribute vec2 a_pos;
+varying vec2 v_uv;
+void main() {
+    v_uv = a_pos * 0.5 + 0.5;
+    gl_Position = vec4(a_pos, 0.0, 1.0);
+}
+`;
+
+const fsSource = `
+precision highp float;
+varying vec2 v_uv;
+
+uniform float u_time;
+uniform float u_iso;
+uniform float u_kelvin;
+uniform float u_focus;
+uniform float u_zoom;
+uniform float u_glow;
+uniform float u_streak;
+uniform vec3  u_streakTint;
+uniform float u_halation;
+uniform float u_desqueeze;
+uniform int   u_peaking;
+uniform int   u_falseColor;
+uniform int   u_zebra;
+uniform int   u_bundle;
+
+// Procedural cinema scene generation (simulating 10-bit Apple Log sensor input)
+vec3 sampleScene(vec2 uv) {
+    // Zoom factor
+    vec2 p = (uv - 0.5) / u_zoom + 0.5;
+    
+    // Focus blur simulation
+    float focusDist = abs(u_focus - 0.5);
+    
+    // Cinematic interior/exterior lighting
+    vec3 col = vec3(0.08, 0.09, 0.12);
+    
+    // Warm key light (simulating window / spotlight)
+    vec2 lightPos = vec2(0.75, 0.65);
+    float d = length(p - lightPos);
+    float specular = smoothstep(0.25, 0.0, d);
+    col += vec3(1.1, 0.95, 0.8) * specular * 1.8;
+    
+    // Actor silhouette / subject in frame
+    float actor = smoothstep(0.35, 0.36, length((p - vec2(0.42, 0.45)) * vec2(1.2, 0.8)));
+    col = mix(col, vec3(0.35, 0.22, 0.18), (1.0 - actor) * 0.8);
+    
+    // Ambient neon back-light
+    float neon = smoothstep(0.6, 0.0, length(p - vec2(0.2, 0.75)));
+    col += vec3(0.1, 0.4, 0.9) * neon * 0.9;
+    
+    // Kelvin temperature shift
+    float tempShift = (u_kelvin - 5600.0) / 4000.0;
+    col.r += tempShift * 0.12;
+    col.b -= tempShift * 0.12;
+    
+    // ISO gain noise
+    float noise = fract(sin(dot(uv * u_time, vec2(12.9898, 78.233))) * 43758.5453);
+    float isoNoise = (u_iso / 3200.0) * 0.06;
+    col += (noise - 0.5) * isoNoise;
+    
+    return clamp(col, 0.0, 2.0);
+}
+
+void main() {
+    vec2 uv = v_uv;
+    
+    // Desqueeze
+    if (u_desqueeze > 1.01) {
+        uv.x = (uv.x - 0.5) / u_desqueeze + 0.5;
+        if (uv.x < 0.0 || uv.x > 1.0) {
+            gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+            return;
+        }
+    }
+    
+    vec3 baseRGB = sampleScene(uv);
+    
+    // 1. Dual-Kawase Bloom Glow simulation
+    vec3 glow = vec3(0.0);
+    float glowRadius = 0.035;
+    for (int i = -3; i <= 3; i++) {
+        for (int j = -3; j <= 3; j++) {
+            vec2 offset = vec2(float(i), float(j)) * glowRadius;
+            vec3 s = sampleScene(uv + offset);
+            float luma = dot(s, vec3(0.2627, 0.6780, 0.0593));
+            if (luma > 0.78) {
+                glow += s * (luma - 0.78);
+            }
+        }
+    }
+    glow = (glow / 49.0) * u_glow * 1.5;
+    
+    // 2. 1D Horizontal Anamorphic Flare Streak
+    vec3 streak = vec3(0.0);
+    float streakSpan = 0.012 * u_streak;
+    for (int k = -8; k <= 8; k++) {
+        vec2 off = vec2(float(k) * streakSpan, 0.0);
+        vec3 s = sampleScene(uv + off);
+        float luma = dot(s, vec3(0.2627, 0.6780, 0.0593));
+        if (luma > 0.82) {
+            streak += s * (luma - 0.82) * exp(-abs(float(k)) * 0.25);
+        }
+    }
+    streak = streak * u_streakTint * 0.6;
+    
+    // 3. Red Halation (Film Emulsion Back-Scatter)
+    vec3 halation = vec3(0.0);
+    for (int m = -2; m <= 2; m++) {
+        vec3 s = sampleScene(uv + vec2(float(m) * 0.008, 0.0));
+        float luma = dot(s, vec3(0.2627, 0.6780, 0.0593));
+        if (luma > 0.75) {
+            halation += vec3(s.r * 1.4, s.g * 0.25, s.b * 0.05) * (luma - 0.75);
+        }
+    }
+    halation = (halation / 5.0) * u_halation;
+    
+    // 4. Color Grading (3D LUT Emulation)
+    vec3 graded = baseRGB;
+    if (u_bundle == 0) {
+        // Gold Anamorphic 35: Warm highlights, rich teal shadows
+        graded.r = pow(graded.r, 0.95) * 1.05 + 0.02;
+        graded.g = pow(graded.g, 1.00);
+        graded.b = pow(graded.b, 1.15) * 0.92;
+    } else if (u_bundle == 1) {
+        // Kodak Vision3 250D: Classic 5207 print curve
+        graded.r = pow(graded.r, 0.92) * 1.08;
+        graded.g = pow(graded.g, 0.98) * 1.02;
+        graded.b = pow(graded.b, 1.05) * 0.96;
+    } else if (u_bundle == 2) {
+        // Bleach Bypass 50: High contrast, desaturated silver retention
+        float luma = dot(graded, vec3(0.2627, 0.6780, 0.0593));
+        float sc = 3.0 * luma * luma - 2.0 * luma * luma * luma;
+        graded = mix(graded, vec3(sc), 0.5);
+    }
+    
+    // Screen composite of spatial optical layers
+    graded += halation;
+    vec3 finalCol = 1.0 - (1.0 - graded) * (1.0 - (glow + streak));
+    
+    // 5. Cinema HUD Overlays
+    if (u_falseColor == 1) {
+        float luma = dot(finalCol, vec3(0.2627, 0.6780, 0.0593));
+        if (luma < 0.02) finalCol = vec3(0.5, 0.0, 0.5);
+        else if (luma < 0.10) finalCol = vec3(0.0, 0.3, 0.8);
+        else if (luma >= 0.38 && luma <= 0.43) finalCol = vec3(0.2, 0.8, 0.2); // 18% Grey
+        else if (luma >= 0.52 && luma <= 0.58) finalCol = vec3(0.9, 0.4, 0.7); // Skin tones
+        else if (luma >= 0.70 && luma <= 0.80) finalCol = vec3(0.95, 0.9, 0.1);
+        else if (luma > 0.80 && luma <= 0.95) finalCol = vec3(0.95, 0.5, 0.0);
+        else if (luma > 0.95) finalCol = vec3(1.0, 0.0, 0.0); // Hard clip
+    } else {
+        // Focus Peaking Sobel Edge
+        if (u_peaking == 1) {
+            float cL = dot(sampleScene(uv - vec2(0.003, 0.0)), vec3(0.3));
+            float cR = dot(sampleScene(uv + vec2(0.003, 0.0)), vec3(0.3));
+            float cT = dot(sampleScene(uv - vec2(0.0, 0.003)), vec3(0.3));
+            float cB = dot(sampleScene(uv + vec2(0.0, 0.003)), vec3(0.3));
+            float edge = abs(cR - cL) + abs(cB - cT);
+            if (edge > 0.15) {
+                finalCol = mix(finalCol, vec3(0.0, 1.0, 0.2), 0.85); // Neon Green Peaking
+            }
+        }
+        
+        // Highlight Zebra Stripes (>95% IRE)
+        if (u_zebra == 1) {
+            float luma = dot(finalCol, vec3(0.2627, 0.6780, 0.0593));
+            if (luma > 0.95) {
+                float stripe = sin((gl_FragCoord.x + gl_FragCoord.y) * 0.25);
+                if (stripe > 0.0) finalCol = vec3(0.0);
+            }
+        }
+    }
+    
+    gl_FragColor = vec4(clamp(finalCol, 0.0, 1.0), 1.0);
+}
+`;
+
+function compileShader(type, src) {
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src);
+    gl.compileShader(s);
+    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+        console.error(gl.getShaderInfoLog(s));
+    }
+    return s;
+}
+
+const prog = gl.createProgram();
+gl.attachShader(prog, compileShader(gl.VERTEX_SHADER, vsSource));
+gl.attachShader(prog, compileShader(gl.FRAGMENT_SHADER, fsSource));
+gl.linkProgram(prog);
+gl.useProgram(prog);
+
+const aPosLoc = gl.getAttribLocation(prog, 'a_pos');
+gl.enableVertexAttribArray(aPosLoc);
+gl.vertexAttribPointer(aPosLoc, 2, gl.FLOAT, false, 0, 0);
+
+// Uniform Locations
+const uLoc = {
+    time: gl.getUniformLocation(prog, 'u_time'),
+    iso: gl.getUniformLocation(prog, 'u_iso'),
+    kelvin: gl.getUniformLocation(prog, 'u_kelvin'),
+    focus: gl.getUniformLocation(prog, 'u_focus'),
+    zoom: gl.getUniformLocation(prog, 'u_zoom'),
+    glow: gl.getUniformLocation(prog, 'u_glow'),
+    streak: gl.getUniformLocation(prog, 'u_streak'),
+    streakTint: gl.getUniformLocation(prog, 'u_streakTint'),
+    halation: gl.getUniformLocation(prog, 'u_halation'),
+    desqueeze: gl.getUniformLocation(prog, 'u_desqueeze'),
+    peaking: gl.getUniformLocation(prog, 'u_peaking'),
+    falseColor: gl.getUniformLocation(prog, 'u_falseColor'),
+    zebra: gl.getUniformLocation(prog, 'u_zebra'),
+    bundle: gl.getUniformLocation(prog, 'u_bundle')
+};
+
+// Render Loop
+let startTime = performance.now();
+function render(timestamp) {
+    const t = (timestamp - startTime) * 0.001;
+    
+    gl.uniform1f(uLoc.time, t);
+    gl.uniform1f(uLoc.iso, state.iso);
+    gl.uniform1f(uLoc.kelvin, state.kelvin);
+    gl.uniform1f(uLoc.focus, state.focus);
+    gl.uniform1f(uLoc.zoom, state.lensZoom);
+    gl.uniform1f(uLoc.glow, optics.glow);
+    gl.uniform1f(uLoc.streak, optics.streak);
+    gl.uniform3fv(uLoc.streakTint, optics.streakTint);
+    gl.uniform1f(uLoc.halation, optics.halation);
+    gl.uniform1f(uLoc.desqueeze, state.desqueeze);
+    gl.uniform1i(uLoc.peaking, state.peaking ? 1 : 0);
+    gl.uniform1i(uLoc.falseColor, state.falseColor ? 1 : 0);
+    gl.uniform1i(uLoc.zebra, state.zebra ? 1 : 0);
+    
+    let bundleId = 0;
+    if (optics.bundle === 'kodak') bundleId = 1;
+    else if (optics.bundle === 'bleach') bundleId = 2;
+    else if (optics.bundle === 'clean') bundleId = 3;
+    gl.uniform1i(uLoc.bundle, bundleId);
+
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
+    drawHistogram();
+    
+    if (state.recording) {
+        state.recFrames++;
+        if (state.recFrames >= state.fps) {
+            state.recFrames = 0;
+            state.recSeconds++;
+        }
+        updateTimecode();
+    }
+    
+    requestAnimationFrame(render);
+}
+requestAnimationFrame(render);
+
+// --- Histogram Scope ---
+const histCanvas = document.getElementById('hist-canvas');
+const histCtx = histCanvas.getContext('2d');
+histCanvas.width = 130;
+histCanvas.height = 32;
+
+function drawHistogram() {
+    histCtx.clearRect(0, 0, histCanvas.width, histCanvas.height);
+    
+    // Draw bell curve based on ISO and Kelvin
+    histCtx.beginPath();
+    histCtx.moveTo(0, 32);
+    
+    const peakX = (state.iso / 3200) * 80 + 30;
+    histCtx.bezierCurveTo(peakX - 30, 30, peakX - 15, 6, peakX, 4);
+    histCtx.bezierCurveTo(peakX + 15, 6, peakX + 30, 30, 130, 32);
+    
+    const grad = histCtx.createLinearGradient(0, 0, 130, 0);
+    grad.addColorStop(0, 'rgba(48, 209, 88, 0.7)');
+    grad.addColorStop(0.5, 'rgba(255, 204, 0, 0.7)');
+    grad.addColorStop(1, 'rgba(255, 59, 48, 0.7)');
+    
+    histCtx.fillStyle = grad;
+    histCtx.fill();
+    
+    // 18% Middle Grey Line
+    histCtx.strokeStyle = 'rgba(255,255,255,0.4)';
+    histCtx.beginPath();
+    histCtx.moveTo(52, 0);
+    histCtx.lineTo(52, 32);
+    histCtx.stroke();
+}
+
+// --- UI Interaction Handlers ---
+function updateShutter(angle) {
+    state.shutterAngle = angle;
+    const exp = ((angle / 360.0) / state.fps);
+    const denom = Math.round(1 / exp);
+    document.getElementById('shutter-val').innerText = `${angle}° (1/${denom}s)`;
+}
+
+document.getElementById('fps-select').addEventListener('change', (e) => {
+    state.fps = parseFloat(e.target.value);
+    updateShutter(state.shutterAngle);
+});
+
+function updateISO(val) {
+    state.iso = parseFloat(val);
+    document.getElementById('iso-val').innerText = `ISO ${val}`;
+}
+
+function updateKelvin(val) {
+    state.kelvin = parseFloat(val);
+    document.getElementById('kelvin-val').innerText = `${val} K`;
+}
+
+function updateFocus(val) {
+    state.focus = parseFloat(val);
+    document.getElementById('focus-val').innerText = parseFloat(val).toFixed(2);
+}
+
+function switchLens(name, zoom, btn) {
+    state.lens = name;
+    state.lensZoom = zoom;
+    document.querySelectorAll('.lens-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+}
+
+function togglePeaking() {
+    state.peaking = !state.peaking;
+    document.getElementById('btn-peaking').classList.toggle('active', state.peaking);
+}
+
+function toggleFalseColor() {
+    state.falseColor = !state.falseColor;
+    document.getElementById('btn-falsecolor').classList.toggle('active', state.falseColor);
+}
+
+function toggleZebra() {
+    state.zebra = !state.zebra;
+    document.getElementById('btn-zebra').classList.toggle('active', state.zebra);
+}
+
+function cycleDesqueeze() {
+    if (state.desqueeze === 1.0) state.desqueeze = 1.33;
+    else if (state.desqueeze === 1.33) state.desqueeze = 1.55;
+    else state.desqueeze = 1.0;
+    
+    document.getElementById('desq-val').innerText = state.desqueeze.toFixed(2) + 'x';
+    document.getElementById('btn-desqueeze').classList.toggle('active', state.desqueeze > 1.01);
+}
+
+function cycleAspectRatio() {
+    currentAspectIndex = (currentAspectIndex + 1) % aspectRatios.length;
+    const item = aspectRatios[currentAspectIndex];
+    state.aspect = item.id;
+    document.getElementById('aspect-label').innerText = item.name;
+    
+    document.getElementById('matte-top').style.height = item.topBottomPercent + '%';
+    document.getElementById('matte-bottom').style.height = item.topBottomPercent + '%';
+}
+
+function toggleOpticsDrawer() {
+    document.getElementById('optics-drawer').classList.toggle('open');
+}
+
+function changeBundle(val) {
+    optics.bundle = val;
+    if (val === 'gold') {
+        optics.glow = 0.48;
+        optics.streak = 4.2;
+        optics.streakTint = [0.18, 0.58, 1.0];
+        optics.halation = 0.35;
+        document.getElementById('bundle-label').innerText = 'GoldAnamorphic35';
+    } else if (val === 'kodak') {
+        optics.glow = 0.32;
+        optics.streak = 1.0;
+        optics.streakTint = [0.9, 0.75, 0.5];
+        optics.halation = 0.60;
+        document.getElementById('bundle-label').innerText = 'KodakVision3_250D';
+    } else if (val === 'bleach') {
+        optics.glow = 0.25;
+        optics.streak = 2.5;
+        optics.streakTint = [0.4, 0.7, 1.0];
+        optics.halation = 0.15;
+        document.getElementById('bundle-label').innerText = 'BleachBypass50';
+    } else {
+        optics.glow = 0.0;
+        optics.streak = 1.0;
+        optics.halation = 0.0;
+        document.getElementById('bundle-label').innerText = 'Clean Apple Log';
+    }
+    
+    document.getElementById('glow-slider').value = optics.glow;
+    document.getElementById('glow-val').innerText = Math.round(optics.glow * 100) + '%';
+    document.getElementById('streak-slider').value = optics.streak;
+    document.getElementById('streak-val').innerText = optics.streak.toFixed(1) + 'x';
+    document.getElementById('halation-slider').value = optics.halation;
+    document.getElementById('halation-val').innerText = Math.round(optics.halation * 100) + '%';
+}
+
+function toggleRecording() {
+    state.recording = !state.recording;
+    document.getElementById('timecode-badge').classList.toggle('recording', state.recording);
+    document.querySelector('.rec-btn').classList.toggle('recording', state.recording);
+    if (!state.recording) {
+        state.recSeconds = 0;
+        state.recFrames = 0;
+        document.getElementById('timecode-text').innerText = '00:00:00:00';
+    }
+}
+
+function updateTimecode() {
+    const hh = String(Math.floor(state.recSeconds / 3600)).padStart(2, '0');
+    const mm = String(Math.floor((state.recSeconds % 3600) / 60)).padStart(2, '0');
+    const ss = String(state.recSeconds % 60).padStart(2, '0');
+    const ff = String(state.recFrames).padStart(2, '0');
+    document.getElementById('timecode-text').innerText = `${hh}:${mm}:${ss}:${ff}`;
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+name: Build Cinema Camera iOS
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Select Xcode 15.4 / 16
+        run: sudo xcode-select -s /Applications/Xcode_15.4.app
+
+      - name: Build Metal Shaders and Swift Targets
+        run: |
+          xcodebuild -project CinemaCamera.xcodeproj \
+            -scheme CinemaCamera \
+            -destination "generic/platform=iOS" \
+            -configuration Release \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            clean build
+
+      - name: Package Unsigned Payload
+        run: |
+          mkdir -p Payload
+          cp -r build/Release-iphoneos/CinemaCamera.app Payload/ || cp -r $(find ~/Library/Developer/Xcode/DerivedData -name "CinemaCamera.app" -type d | head -n 1) Payload/
+          zip -r CinemaCamera_unsigned.ipa Payload/
+
+      - name: Upload IPA Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: CinemaCamera-IPA
+          path: CinemaCamera_unsigned.ipa

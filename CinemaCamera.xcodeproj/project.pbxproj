@@ -1,0 +1,351 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		1A1000012B00000100000001 /* CinemaCameraApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2000012B00000100000001 /* CinemaCameraApp.swift */; };
+		1A1000022B00000100000001 /* CoreCaptureEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2000022B00000100000001 /* CoreCaptureEngine.swift */; };
+		1A1000032B00000100000001 /* CinemaMetalContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2000032B00000100000001 /* CinemaMetalContext.swift */; };
+		1A1000042B00000100000001 /* SpatialOpticsPipeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2000042B00000100000001 /* SpatialOpticsPipeline.swift */; };
+		1A1000052B00000100000001 /* CubeLUTParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2000052B00000100000001 /* CubeLUTParser.swift */; };
+		1A1000062B00000100000001 /* CinemaLUTBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2000062B00000100000001 /* CinemaLUTBundle.swift */; };
+		1A1000072B00000100000001 /* AspectRatioDefinition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2000072B00000100000001 /* AspectRatioDefinition.swift */; };
+		1A1000082B00000100000001 /* CinemaSpatialOptics.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1A2000082B00000100000001 /* CinemaSpatialOptics.metal */; };
+		1A1000092B00000100000001 /* ZeroCopyRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2000092B00000100000001 /* ZeroCopyRecorder.swift */; };
+		1A10000A2B00000100000001 /* PixelBufferPoolManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A20000A2B00000100000001 /* PixelBufferPoolManager.swift */; };
+		1A10000B2B00000100000001 /* ExternalStorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A20000B2B00000100000001 /* ExternalStorageManager.swift */; };
+		1A10000C2B00000100000001 /* CinemaHUDView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A20000C2B00000100000001 /* CinemaHUDView.swift */; };
+		1A10000D2B00000100000001 /* MetalViewContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A20000D2B00000100000001 /* MetalViewContainer.swift */; };
+		1A10000E2B00000100000001 /* CinemaCameraViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A20000E2B00000100000001 /* CinemaCameraViewModel.swift */; };
+		1A10000F2B00000100000001 /* TactileDial.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A20000F2B00000100000001 /* TactileDial.swift */; };
+		1A1000102B00000100000001 /* HistogramView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2000102B00000100000001 /* HistogramView.swift */; };
+		1A1000112B00000100000001 /* LUTBrowserSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2000112B00000100000001 /* LUTBrowserSheet.swift */; };
+		1A1000122B00000100000001 /* Bundles in Resources */ = {isa = PBXBuildFile; fileRef = 1A2000122B00000100000001 /* Bundles */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		1A0000012B00000100000001 /* CinemaCamera.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CinemaCamera.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1A2000002B00000100000001 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		1A2000012B00000100000001 /* CinemaCameraApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CinemaCameraApp.swift; sourceTree = "<group>"; };
+		1A2000022B00000100000001 /* CoreCaptureEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreCaptureEngine.swift; sourceTree = "<group>"; };
+		1A2000032B00000100000001 /* CinemaMetalContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CinemaMetalContext.swift; sourceTree = "<group>"; };
+		1A2000042B00000100000001 /* SpatialOpticsPipeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpatialOpticsPipeline.swift; sourceTree = "<group>"; };
+		1A2000052B00000100000001 /* CubeLUTParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CubeLUTParser.swift; sourceTree = "<group>"; };
+		1A2000062B00000100000001 /* CinemaLUTBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CinemaLUTBundle.swift; sourceTree = "<group>"; };
+		1A2000072B00000100000001 /* AspectRatioDefinition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AspectRatioDefinition.swift; sourceTree = "<group>"; };
+		1A2000082B00000100000001 /* CinemaSpatialOptics.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = CinemaSpatialOptics.metal; sourceTree = "<group>"; };
+		1A2000092B00000100000001 /* ZeroCopyRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZeroCopyRecorder.swift; sourceTree = "<group>"; };
+		1A20000A2B00000100000001 /* PixelBufferPoolManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixelBufferPoolManager.swift; sourceTree = "<group>"; };
+		1A20000B2B00000100000001 /* ExternalStorageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExternalStorageManager.swift; sourceTree = "<group>"; };
+		1A20000C2B00000100000001 /* CinemaHUDView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CinemaHUDView.swift; sourceTree = "<group>"; };
+		1A20000D2B00000100000001 /* MetalViewContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalViewContainer.swift; sourceTree = "<group>"; };
+		1A20000E2B00000100000001 /* CinemaCameraViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CinemaCameraViewModel.swift; sourceTree = "<group>"; };
+		1A20000F2B00000100000001 /* TactileDial.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TactileDial.swift; sourceTree = "<group>"; };
+		1A2000102B00000100000001 /* HistogramView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistogramView.swift; sourceTree = "<group>"; };
+		1A2000112B00000100000001 /* LUTBrowserSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LUTBrowserSheet.swift; sourceTree = "<group>"; };
+		1A2000122B00000100000001 /* Bundles */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Bundles; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		1A3000012B00000100000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		1A4000012B00000100000001 = {
+			isa = PBXGroup;
+			children = (
+				1A4000022B00000100000001 /* Sources */,
+				1A0000012B00000100000001 /* CinemaCamera.app */,
+			);
+			sourceTree = "<group>";
+		};
+		1A4000022B00000100000001 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				1A4000032B00000100000001 /* App */,
+				1A4000042B00000100000001 /* CoreCaptureEngine */,
+				1A4000052B00000100000001 /* MetalShaderPipeline */,
+				1A4000062B00000100000001 /* ZeroCopyRecorder */,
+				1A4000072B00000100000001 /* CinemaHUDView */,
+				1A2000122B00000100000001 /* Bundles */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+		1A4000032B00000100000001 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				1A2000012B00000100000001 /* CinemaCameraApp.swift */,
+				1A2000002B00000100000001 /* Info.plist */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		1A4000042B00000100000001 /* CoreCaptureEngine */ = {
+			isa = PBXGroup;
+			children = (
+				1A2000022B00000100000001 /* CoreCaptureEngine.swift */,
+			);
+			path = CoreCaptureEngine;
+			sourceTree = "<group>";
+		};
+		1A4000052B00000100000001 /* MetalShaderPipeline */ = {
+			isa = PBXGroup;
+			children = (
+				1A2000032B00000100000001 /* CinemaMetalContext.swift */,
+				1A2000042B00000100000001 /* SpatialOpticsPipeline.swift */,
+				1A2000052B00000100000001 /* CubeLUTParser.swift */,
+				1A2000062B00000100000001 /* CinemaLUTBundle.swift */,
+				1A2000072B00000100000001 /* AspectRatioDefinition.swift */,
+				1A2000082B00000100000001 /* CinemaSpatialOptics.metal */,
+			);
+			path = MetalShaderPipeline;
+			sourceTree = "<group>";
+		};
+		1A4000062B00000100000001 /* ZeroCopyRecorder */ = {
+			isa = PBXGroup;
+			children = (
+				1A2000092B00000100000001 /* ZeroCopyRecorder.swift */,
+				1A20000A2B00000100000001 /* PixelBufferPoolManager.swift */,
+				1A20000B2B00000100000001 /* ExternalStorageManager.swift */,
+			);
+			path = ZeroCopyRecorder;
+			sourceTree = "<group>";
+		};
+		1A4000072B00000100000001 /* CinemaHUDView */ = {
+			isa = PBXGroup;
+			children = (
+				1A20000C2B00000100000001 /* CinemaHUDView.swift */,
+				1A20000D2B00000100000001 /* MetalViewContainer.swift */,
+				1A20000E2B00000100000001 /* CinemaCameraViewModel.swift */,
+				1A20000F2B00000100000001 /* TactileDial.swift */,
+				1A2000102B00000100000001 /* HistogramView.swift */,
+				1A2000112B00000100000001 /* LUTBrowserSheet.swift */,
+			);
+			path = CinemaHUDView;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		1A0000012B00000100000001 /* CinemaCamera */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1A5000012B00000100000001 /* Build configuration list for PBXNativeTarget "CinemaCamera" */;
+			buildPhases = (
+				1A6000012B00000100000001 /* Sources */,
+				1A3000012B00000100000001 /* Frameworks */,
+				1A7000012B00000100000001 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = CinemaCamera;
+			productName = CinemaCamera;
+			productReference = 1A0000012B00000100000001 /* CinemaCamera.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		1A8000012B00000100000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					1A0000012B00000100000001 = {
+						CreatedOnToolsVersion = 15.0;
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 1A5000022B00000100000001 /* Build configuration list for PBXProject "CinemaCamera" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 1A4000012B00000100000001;
+			productRefGroup = 1A4000012B00000100000001;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				1A0000012B00000100000001 /* CinemaCamera */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		1A7000012B00000100000001 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1A1000122B00000100000001 /* Bundles in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		1A6000012B00000100000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1A1000012B00000100000001 /* CinemaCameraApp.swift in Sources */,
+				1A1000022B00000100000001 /* CoreCaptureEngine.swift in Sources */,
+				1A1000032B00000100000001 /* CinemaMetalContext.swift in Sources */,
+				1A1000042B00000100000001 /* SpatialOpticsPipeline.swift in Sources */,
+				1A1000052B00000100000001 /* CubeLUTParser.swift in Sources */,
+				1A1000062B00000100000001 /* CinemaLUTBundle.swift in Sources */,
+				1A1000072B00000100000001 /* AspectRatioDefinition.swift in Sources */,
+				1A1000082B00000100000001 /* CinemaSpatialOptics.metal in Sources */,
+				1A1000092B00000100000001 /* ZeroCopyRecorder.swift in Sources */,
+				1A10000A2B00000100000001 /* PixelBufferPoolManager.swift in Sources */,
+				1A10000B2B00000100000001 /* ExternalStorageManager.swift in Sources */,
+				1A10000C2B00000100000001 /* CinemaHUDView.swift in Sources */,
+				1A10000D2B00000100000001 /* MetalViewContainer.swift in Sources */,
+				1A10000E2B00000100000001 /* CinemaCameraViewModel.swift in Sources */,
+				1A10000F2B00000100000001 /* TactileDial.swift in Sources */,
+				1A1000102B00000100000001 /* HistogramView.swift in Sources */,
+				1A1000112B00000100000001 /* LUTBrowserSheet.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		1A9000012B00000100000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1";
+			};
+			name = Debug;
+		};
+		1A9000022B00000100000001 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		1A9000032B00000100000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Sources/App/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.antigravity.CinemaCamera;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = "1";
+			};
+			name = Debug;
+		};
+		1A9000042B00000100000001 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Sources/App/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.antigravity.CinemaCamera;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = "1";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1A5000012B00000100000001 /* Build configuration list for PBXNativeTarget "CinemaCamera" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1A9000032B00000100000001 /* Debug */,
+				1A9000042B00000100000001 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1A5000022B00000100000001 /* Build configuration list for PBXProject "CinemaCamera" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1A9000012B00000100000001 /* Debug */,
+				1A9000022B00000100000001 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+	};
+	rootObject = 1A8000012B00000100000001 /* Project object */;
+}

@@ -1,0 +1,14 @@
+{
+  "lutFile": "grade.cube",
+  "inputColorSpace": "AppleLog",
+  "glowIntensity": 0.48,
+  "glowThreshold": 0.75,
+  "anamorphicStretch": 4.2,
+  "anamorphicTintRGB": [
+    0.18,
+    0.58,
+    1.0
+  ],
+  "halationStrength": 0.35,
+  "defaultAspectRatio": "2.39:1"
+}
