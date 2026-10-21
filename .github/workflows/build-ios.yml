@@ -12,8 +12,10 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Select Xcode 15.4 / 16
-        run: sudo xcode-select -s /Applications/Xcode_15.4.app
+      - name: Verify Xcode Version
+        run: |
+          xcodebuild -version
+          xcrun --show-sdk-path --sdk iphoneos
 
       - name: Build Metal Shaders and Swift Targets
         run: |
@@ -21,14 +23,18 @@ jobs:
             -scheme CinemaCamera \
             -destination "generic/platform=iOS" \
             -configuration Release \
-            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGN_STYLE=Manual \
+            DEVELOPMENT_TEAM="" \
+            CONFIGURATION_BUILD_DIR=build/Release-iphoneos \
             clean build
 
       - name: Package Unsigned Payload
         run: |
           mkdir -p Payload
-          cp -r build/Release-iphoneos/CinemaCamera.app Payload/ || cp -r $(find ~/Library/Developer/Xcode/DerivedData -name "CinemaCamera.app" -type d | head -n 1) Payload/
+          cp -r build/Release-iphoneos/CinemaCamera.app Payload/
           zip -r CinemaCamera_unsigned.ipa Payload/
 
       - name: Upload IPA Artifact
